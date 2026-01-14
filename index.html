@@ -4,151 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IIM Indore Timetable Tool</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Force hide helper */
-        .force-hidden { display: none !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Custom Scrollbar for the code box */
+        textarea::-webkit-scrollbar { width: 8px; height: 8px; }
+        textarea::-webkit-scrollbar-track { background: #1e293b; }
+        textarea::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .btn-check { transition: all 0.2s; }
+        .btn-check:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 p-6">
+<body class="text-slate-800 p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-8 pt-6">
-            <div class="flex justify-center mb-4">
-                <div class="bg-blue-600 p-3 rounded-xl shadow-lg shadow-blue-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                </div>
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-8 pb-6 border-b border-slate-200">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900">📅 IIM Indore Timetable Tool</h1>
+                <p class="text-slate-500">Term IX Automation Script Generator</p>
             </div>
-            <h1 class="text-3xl font-bold text-slate-900 mb-2">IIM Indore Timetable Tool</h1>
-            <p class="text-slate-500">Generate a personalized script for IPM Term IX</p>
+            <div class="hidden md:block text-right text-xs text-slate-400">
+                <div>Safe & Secure • Client Side Only</div>
+                <div>No Data Sent to Server</div>
+            </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <div id="step1" class="p-8 fade-in">
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                    <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-sm">1</span> Select Section
-                </h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <button onclick="selectSection('A')" id="btnSectionA" class="group p-8 rounded-xl border-2 border-slate-200 hover:border-blue-400 hover:bg-slate-50 transition-all text-center">
-                        <div class="text-4xl font-black text-slate-300 mb-2 group-hover:text-blue-600 transition-colors">A</div>
-                        <div class="font-semibold text-slate-600">Section A</div>
-                    </button>
-                    <button onclick="selectSection('B')" id="btnSectionB" class="group p-8 rounded-xl border-2 border-slate-200 hover:border-blue-400 hover:bg-slate-50 transition-all text-center">
-                        <div class="text-4xl font-black text-slate-300 mb-2 group-hover:text-blue-600 transition-colors">B</div>
-                        <div class="font-semibold text-slate-600">Section B</div>
-                    </button>
-                </div>
-            </div>
-
-            <div id="step2" class="p-8 hidden force-hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold flex items-center gap-2">
-                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-sm">2</span> Select Courses
+            <div class="lg:col-span-7 space-y-8">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="bg-blue-100 text-blue-700 w-6 h-6 rounded flex items-center justify-center text-xs">1</span>
+                        Select Your Section
                     </h2>
-                    <button onclick="goToStep(1)" class="text-sm text-slate-400 hover:text-slate-600 underline">Change Section</button>
-                </div>
-
-                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg flex gap-3">
-                    <p class="text-sm text-amber-800"><strong>Note:</strong> Unselected courses will be automatically blocked.</p>
-                </div>
-
-                <div id="courseGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6"></div>
-
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-8">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Missing a course?</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="customInput" placeholder="Enter Code (e.g. XYZ)" 
-                            class="flex-1 px-4 py-2 rounded-lg border border-slate-300 uppercase focus:ring-2 focus:ring-blue-500 outline-none">
-                        <button onclick="addCustomCourse()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-900 transition-colors">
-                            Add
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="btnA" onclick="setSection('A')" class="p-4 rounded-xl border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold text-lg transition-all">
+                            Section A
+                        </button>
+                        <button id="btnB" onclick="setSection('B')" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-600 font-bold text-lg transition-all">
+                            Section B
                         </button>
                     </div>
                 </div>
 
-                <button onclick="generateScript()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
-                    Generate Script
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2">
+                            <span class="bg-blue-100 text-blue-700 w-6 h-6 rounded flex items-center justify-center text-xs">2</span>
+                            Select Courses
+                        </h2>
+                        <span id="countBadge" class="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded">4 Selected</span>
+                    </div>
+                    
+                    <div class="p-3 bg-amber-50 text-amber-800 text-sm rounded-lg mb-4 border border-amber-100">
+                        ⚠️ <strong>Note:</strong> Any course NOT selected here will be automatically blocked from your timetable.
+                    </div>
+
+                    <div id="courseGrid" class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto pr-2">
+                        </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+                        <input type="text" id="customInput" placeholder="Missing a Code? (e.g. XYZ)" 
+                            class="flex-1 px-4 py-2 border border-slate-300 rounded-lg uppercase text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <button onclick="addCustom()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-900 transition">
+                            + Add
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="generate()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 transition-all lg:hidden">
+                    Generate Script 👇
                 </button>
             </div>
 
-            <div id="step3" class="p-8 hidden force-hidden fade-in">
-                <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold text-slate-900">Setup Guide</h2>
-                    <p class="text-slate-500">Follow the steps below to activate your timetable</p>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 mb-8">
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col items-center text-center">
-                        <h3 class="font-bold text-lg mb-2">1. Create New Sheet</h3>
-                        <button onclick="window.open('https://sheet.new', '_blank')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl mt-2 transition shadow-lg shadow-green-200">
-                            Open sheet.new
-                        </button>
-                    </div>
-
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col items-center text-center">
-                        <h3 class="font-bold text-lg mb-2">2. Copy The Code</h3>
-                        <button onclick="copyToClipboard()" id="copyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl mt-2 transition shadow-lg shadow-blue-200">
-                            Copy to Clipboard
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 rounded-xl p-6 text-slate-300 mb-6">
-                    <h3 class="font-bold text-white mb-4">Final Installation Steps</h3>
-                    <ol class="space-y-4 text-sm font-mono list-decimal pl-4">
-                        <li>In the new Google Sheet, go to <strong>Extensions</strong> → <strong>Apps Script</strong>.</li>
-                        <li>Delete any code there and <strong>Paste</strong> (Ctrl+V) your code.</li>
-                        <li>Click <strong>Save 💾</strong>. Then refresh your Google Sheet tab.</li>
-                        <li>Wait a moment, a new menu <strong>"📚 My Timetable"</strong> will appear. Run it!</li>
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-slate-900 text-slate-300 p-6 rounded-2xl">
+                    <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                        <span>📝</span> Installation Guide
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-3 text-sm font-mono">
+                        <li>
+                            <a href="https://sheet.new" target="_blank" class="text-green-400 hover:underline font-bold">Click here to open a new Sheet</a>
+                        </li>
+                        <li>Go to <strong>Extensions</strong> → <strong>Apps Script</strong>.</li>
+                        <li>Delete existing code.</li>
+                        <li><strong>Paste</strong> the code below.</li>
+                        <li>Click <strong>Save (disk icon)</strong>.</li>
+                        <li>Refresh the Google Sheet.</li>
+                        <li>Use the new <strong>"📚 My Timetable"</strong> menu.</li>
                     </ol>
                 </div>
 
-                <button onclick="goToStep(1)" class="w-full py-3 text-slate-400 font-medium hover:text-slate-600 text-sm">
-                    Start Over
-                </button>
+                <div class="relative">
+                    <div class="absolute top-0 right-0 p-2">
+                        <button onclick="copyCode()" id="copyBtn" class="bg-white/10 backdrop-blur hover:bg-white/20 text-white border border-white/20 px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-2">
+                            <span>📋</span> Copy Code
+                        </button>
+                    </div>
+                    <textarea id="outputBox" readonly 
+                        class="w-full h-[500px] bg-slate-800 text-green-400 font-mono text-xs p-4 pt-12 rounded-2xl resize-none focus:outline-none border-2 border-slate-700"
+                        placeholder="Click options on the left to generate code..."></textarea>
+                </div>
             </div>
-        </div>
-        
-        <div class="text-center mt-8 text-slate-400 text-xs">
-            Built for IPM 2023 Batch • Term IX
-                   By Naman Agrawal 🙏
         </div>
     </div>
 
-    <textarea id="hiddenScript" style="opacity: 0; height: 1px; width: 1px; position: absolute;"></textarea>
-
     <script>
         // --- DATA ---
-        const MASTER_URL = 'https://docs.google.com/spreadsheets/d/1dnzXBXlF4-OpVblhj4DJM6kJ5l-FEACjWwun7ntTGXk/edit?usp=drive_link';
+        const MASTER_URL = "https://docs.google.com/spreadsheets/d/1dnzXBXlF4-OpVblhj4DJM6kJ5l-FEACjWwun7ntTGXk/edit?usp=drive_link";
         
-        const defaultCourses = [
-            { code: 'BGS', name: 'Business, Government & Society' },
-            { code: 'IBH', name: 'Intro to Business History' },
+        const courses = [
+            { code: 'BGS', name: 'Business, Govt & Society' },
+            { code: 'IBH', name: 'Intro Business History' },
             { code: 'WD', name: 'Web Development' },
-            { code: 'PoM', name: 'Principles of Management' },
+            { code: 'PoM', name: 'Principles of Mgmt' },
             { code: 'LE', name: 'Labor Economics' },
             { code: 'DE', name: 'Development Economics' },
             { code: 'ME', name: 'Media Ethics' },
             { code: 'HVBG', name: 'Human Values (Gita)' },
-            { code: 'SMC', name: 'Study Of Marginalised Comm.' },
+            { code: 'SMC', name: 'Marginalised Communities' },
             { code: 'RT', name: 'Rasa Theory' },
             { code: 'BPP', name: 'Blending Profit w/ Purpose' },
             { code: 'APPS', name: 'Algorithmic Paradigms' },
             { code: 'BE', name: 'Behavioral Economics' },
             { code: 'QMP', name: 'Quant Methods' },
-            { code: 'MLTP', name: 'Mgmt Learning Through Theatre' },
+            { code: 'MLTP', name: 'Mgmt Through Theatre' },
             { code: 'DES', name: 'Discrete Event Simulation' },
             { code: 'EBS', name: 'Eco. of Business Strategy' },
             { code: 'IPRM', name: 'IP Rights Management' },
-            { code: 'ETC', name: 'Emerging Technologies' },
+            { code: 'ETC', name: 'Emerging Tech' },
             { code: 'LCL', name: 'Lights, Camera, Lead' },
             { code: 'SSL', name: 'Story to Strategy' },
             { code: 'T&P', name: 'Technology & Politics' }
@@ -156,148 +146,142 @@
 
         // --- STATE ---
         let state = {
-            step: 1,
             section: 'A',
             selected: ['BGS', 'IBH', 'WD', 'PoM'],
             custom: []
         };
 
-        // --- SAFE ICON LOADING ---
-        function safeRefreshIcons() {
-            if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                try { lucide.createIcons(); } catch(e) { console.log('Icons failed', e); }
-            }
-        }
-        
-        // Init icons on load
-        window.onload = safeRefreshIcons;
+        // --- INIT ---
+        window.onload = () => {
+            renderCourses();
+            generate(); // Generate default immediately
+        };
 
         // --- FUNCTIONS ---
 
-        function goToStep(stepNumber) {
-            // Hide all steps securely
-            ['step1', 'step2', 'step3'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) {
-                    el.classList.add('hidden');
-                    el.classList.add('force-hidden');
-                }
-            });
-            
-            // Show requested step
-            const target = document.getElementById(`step${stepNumber}`);
-            if(target) {
-                target.classList.remove('hidden');
-                target.classList.remove('force-hidden');
-            }
-            
-            // Try to refresh icons, but don't crash if it fails
-            safeRefreshIcons();
-        }
-
-        function selectSection(sec) {
+        function setSection(sec) {
             state.section = sec;
             
-            // Update UI Buttons
-            const btnA = document.getElementById('btnSectionA');
-            const btnB = document.getElementById('btnSectionB');
+            // Visual Toggle
+            const btnA = document.getElementById('btnA');
+            const btnB = document.getElementById('btnB');
             
-            const activeClass = "border-blue-600 bg-blue-50 ring-4 ring-blue-100";
-            const inactiveClass = "border-slate-200 hover:border-blue-400 hover:bg-slate-50";
+            const active = "border-blue-600 bg-blue-50 text-blue-700";
+            const inactive = "border-slate-200 hover:border-slate-300 text-slate-600";
             
-            // Reset base classes
-            btnA.className = "group p-8 rounded-xl border-2 transition-all text-center cursor-pointer " + (sec === 'A' ? activeClass : inactiveClass);
-            btnB.className = "group p-8 rounded-xl border-2 transition-all text-center cursor-pointer " + (sec === 'B' ? activeClass : inactiveClass);
-
-            // Render next step's content
-            renderCourses();
+            btnA.className = `p-4 rounded-xl border-2 font-bold text-lg transition-all ${sec === 'A' ? active : inactive}`;
+            btnB.className = `p-4 rounded-xl border-2 font-bold text-lg transition-all ${sec === 'B' ? active : inactive}`;
             
-            // Move to next step immediately
-            goToStep(2);
+            generate();
         }
 
         function renderCourses() {
             const grid = document.getElementById('courseGrid');
-            if(!grid) return;
+            grid.innerHTML = '';
             
-            grid.innerHTML = ''; // Clear
+            const allList = [...courses, ...state.custom.map(c => ({ code: c, name: 'Custom Added' }))];
 
-            const allDisplayCourses = [...defaultCourses, ...state.custom.map(c => ({ code: c, name: 'Custom Added' }))];
-
-            allDisplayCourses.forEach(c => {
+            allList.forEach(c => {
                 const isSelected = state.selected.includes(c.code);
+                const btn = document.createElement('div');
                 
-                const btn = document.createElement('div'); // Using div instead of button to prevent form submission issues
-                btn.className = `p-3 rounded-lg border text-left transition-all flex justify-between items-start w-full cursor-pointer ${
-                    isSelected 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-slate-200 hover:border-slate-400 bg-white'
-                }`;
-                btn.onclick = () => toggleCourse(c.code);
-
+                // Styling
+                let css = "p-3 rounded-lg border text-left cursor-pointer transition-all select-none btn-check ";
+                css += isSelected 
+                    ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500" 
+                    : "border-slate-200 hover:border-slate-400 bg-white";
+                
+                btn.className = css;
+                btn.onclick = () => toggle(c.code);
+                
                 btn.innerHTML = `
-                    <div>
-                        <div class="font-bold ${isSelected ? 'text-blue-700' : 'text-slate-700'}">${c.code}</div>
-                        <div class="text-xs text-slate-500 truncate w-24">${c.name}</div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-bold ${isSelected ? 'text-blue-700' : 'text-slate-700'}">${c.code}</div>
+                            <div class="text-[10px] text-slate-500 uppercase tracking-wide truncate w-24">${c.name}</div>
+                        </div>
+                        <div class="${isSelected ? 'text-blue-600' : 'text-slate-200'}">
+                            ${isSelected ? '✅' : '⬜'}
+                        </div>
                     </div>
-                    ${isSelected ? '<span class="text-blue-600 font-bold">✓</span>' : ''}
                 `;
                 grid.appendChild(btn);
             });
+
+            // Update Badge
+            document.getElementById('countBadge').innerText = `${state.selected.length} Selected`;
         }
 
-        function toggleCourse(code) {
-            if (state.selected.includes(code)) {
-                state.selected = state.selected.filter(c => c !== code);
+        function toggle(code) {
+            if(state.selected.includes(code)) {
+                state.selected = state.selected.filter(x => x !== code);
             } else {
                 state.selected.push(code);
             }
             renderCourses();
+            generate();
         }
 
-        function addCustomCourse() {
-            const input = document.getElementById('customInput');
-            const code = input.value.trim().toUpperCase();
-            
-            if (code && !state.selected.includes(code)) {
-                state.custom.push(code);
-                state.selected.push(code);
-                input.value = '';
+        function addCustom() {
+            const val = document.getElementById('customInput').value.trim().toUpperCase();
+            if(val && !state.selected.includes(val)) {
+                state.custom.push(val);
+                state.selected.push(val);
+                document.getElementById('customInput').value = '';
                 renderCourses();
+                generate();
             }
         }
 
-        function generateScript() {
-            const otherSection = state.section === 'A' ? 'B' : 'A';
-            const allKnownCodes = [...defaultCourses.map(c => c.code), ...state.custom];
-            const forceRemove = allKnownCodes.filter(c => !state.selected.includes(c));
+        function copyCode() {
+            const box = document.getElementById('outputBox');
+            box.select();
+            document.execCommand('copy');
+            
+            const btn = document.getElementById('copyBtn');
+            const oldText = btn.innerHTML;
+            btn.innerHTML = "✅ Copied!";
+            btn.classList.add("bg-green-600", "border-green-600");
+            
+            setTimeout(() => {
+                btn.innerHTML = oldText;
+                btn.classList.remove("bg-green-600", "border-green-600");
+            }, 2000);
+        }
 
-            const coursesList = state.selected.map(c => "'" + c + "'").join(', ');
-            const forceRemoveList = forceRemove.map(c => "'" + c + "'").join(', ');
+        function generate() {
+            const otherSec = state.section === 'A' ? 'B' : 'A';
+            
+            // Calc logic
+            const allKnown = [...courses.map(c => c.code), ...state.custom];
+            const forceRemove = allKnown.filter(c => !state.selected.includes(c));
 
             const script = `/**
  * IIM Indore Timetable Script - Section ${state.section}
- * Generated via Web Tool
+ * Generated: ${new Date().toLocaleDateString()}
  */
+
+// 1. CONFIGURATION
 const MY_SECTION = '${state.section}';
-const OTHER_SECTION = '${otherSection}';
+const OTHER_SECTION = '${otherSec}';
 const MASTER_SHEET_URL = '${MASTER_URL}';
 
 const MY_COURSES = [
-  ${coursesList},
-  'Business, Government', 'History', 'Web Development', 'Management',
-  'Economics', 'Ethics', 'Values', 'Communities', 'Theory', 'Profit',
-  'Algorithm', 'Simulation', 'Strategy', 'Rights', 'Technologies',
+  ${state.selected.map(c => `'${c}'`).join(', ')},
+  'Business, Government', 'History', 'Web Development', 'Management', 
+  'Economics', 'Ethics', 'Values', 'Communities', 'Theory', 'Profit', 
+  'Algorithm', 'Simulation', 'Strategy', 'Rights', 'Technologies', 
   'Leadership', 'Politics'
 ];
 
 const FORCE_REMOVE = [
-  ${forceRemoveList}
+  ${forceRemove.map(c => `'${c}'`).join(', ')}
 ];
 
 const FILTERED_TAB_NAME = 'My Filtered Timetable';
 const MASTER_TAB_NAME = 'Original Master Timetable';
 
+// 2. MENU
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('📚 My Timetable')
     .addItem('🔄 Create/Update Timetable', 'createFilteredTimetable')
@@ -320,6 +304,7 @@ function removeAutoSync(showMessage = true) {
   if (showMessage) SpreadsheetApp.getUi().alert('🔕 Auto-Sync Disabled');
 }
 
+// 3. MAIN LOGIC
 function createFilteredTimetable() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let ui = null;
@@ -327,9 +312,9 @@ function createFilteredTimetable() {
 
   try {
     let externalSheet;
-    try {
-      externalSheet = SpreadsheetApp.openByUrl(MASTER_SHEET_URL).getSheets()[0];
-    } catch (e) { throw new Error('Could not access Master Sheet.'); }
+    try { 
+      externalSheet = SpreadsheetApp.openByUrl(MASTER_SHEET_URL).getSheets()[0]; 
+    } catch (e) { throw new Error("Could not access Master Sheet."); }
 
     const oldMaster = ss.getSheetByName(MASTER_TAB_NAME);
     if (oldMaster) ss.deleteSheet(oldMaster);
@@ -344,47 +329,47 @@ function createFilteredTimetable() {
 
     const range = filteredSheet.getDataRange();
     const values = range.getValues();
-
+    
     let headerRowIndex = 0;
-    for (let r = 0; r < 10; r++) {
-      const rowStr = values[r].join(' ').toLowerCase();
-      if (rowStr.includes('date') && rowStr.includes('room')) {
+    for (let r = 0; r < 10; r++) { 
+      const rowStr = values[r].join(" ").toLowerCase();
+      if (rowStr.includes("date") && rowStr.includes("room")) {
         headerRowIndex = r;
         break;
       }
     }
-
+    
     for (let i = headerRowIndex + 1; i < values.length; i++) {
       for (let j = 0; j < values[0].length; j++) {
         const cellValue = values[i][j].toString().trim();
-        if (j === 0 || j === 1) continue;
+        if (j === 0 || j === 1) continue; 
         if (cellValue === '' || /break/i.test(cellValue)) continue;
 
         if (shouldDeleteCell(cellValue)) {
-          filteredSheet.getRange(i + 1, j + 1).clearContent();
+          filteredSheet.getRange(i + 1, j + 1).clearContent(); 
         } else {
-          highlightCell(filteredSheet.getRange(i + 1, j + 1), cellValue);
+          highlightCell(filteredSheet.getRange(i + 1, j + 1), cellValue); 
         }
       }
     }
-
+    
     if (ui) ui.alert('✅ Success', 'Timetable generated!', ui.ButtonSet.OK);
-
+    
   } catch (e) {
     if (ui) ui.alert('❌ Error', e.toString(), ui.ButtonSet.OK);
   }
 }
 
 function shouldDeleteCell(text) {
-  const isBlocked = FORCE_REMOVE.some(term => new RegExp('\\\\b' + term + '\\\\b', 'i').test(text));
+  const isBlocked = FORCE_REMOVE.some(term => new RegExp(\`\\\\b\${term}\\\\b\`, 'i').test(text));
   if (isBlocked) return true;
 
-  const regexWrongSection = new RegExp('\\\\b' + OTHER_SECTION + '\\\\s+\\\\d', 'i');
-  if (regexWrongSection.test(text)) return true;
+  const regexWrongSection = new RegExp(\`\\\\b\${OTHER_SECTION}\\\\s+\\\\d\`, 'i'); 
+  if (regexWrongSection.test(text)) return true; 
 
   const isMyCourse = MY_COURSES.some(course => {
-    const safeCourse = course.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
-    return new RegExp('\\\\b' + safeCourse, 'i').test(text);
+    const safeCourse = course.replace(/[.*+?^$\{​​​​​​​}()|[\\]\\\\]/g, '\\\\$&');
+    return new RegExp(\`\\\\b\${safeCourse}\`, 'i').test(text);
   });
 
   if (!isMyCourse) return true;
@@ -396,7 +381,7 @@ function highlightCell(range, text) {
   range.setFontWeight('bold');
   if (/quiz|exam|mid term|end term/i.test(text)) {
     range.setBorder(true, true, true, true, true, true, '#DC2626', SpreadsheetApp.BorderStyle.SOLID_THICK);
-    range.setBackground('#FEE2E2');
+    range.setBackground('#FEE2E2'); 
   }
 }
 
@@ -404,7 +389,7 @@ function syncToCalendar() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(FILTERED_TAB_NAME);
   const ui = SpreadsheetApp.getUi();
-
+  
   if (!sheet) { ui.alert('❌ Error', 'Run Update Timetable first.', ui.ButtonSet.OK); return; }
   if (ui.alert('📅 Calendar Sync', 'Add to Google Calendar?', ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
 
@@ -423,7 +408,7 @@ function syncToCalendar() {
 
     let headerRowIndex = 0;
     for (let r = 0; r < 10; r++) {
-      if (data[r].join(' ').toLowerCase().includes('date')) { headerRowIndex = r; break; }
+      if (data[r].join(" ").toLowerCase().includes("date")) { headerRowIndex = r; break; }
     }
 
     let createdCount = 0;
@@ -433,13 +418,13 @@ function syncToCalendar() {
       const row = data[i];
       if (row[0] instanceof Date) currentDate = new Date(row[0]);
       else if (typeof row[0] === 'string' && row[0].includes('-')) currentDate = new Date(row[0]);
-
+      
       if (!currentDate) continue;
 
       for (let colIndex in timeMap) {
         const cellValue = row[colIndex];
         if (!cellValue || cellValue.toString().trim() === '') continue;
-
+        
         const slot = timeMap[colIndex];
         const title = cellValue.toString().trim();
         const startTime = new Date(currentDate); startTime.setHours(slot.startH, slot.startM, 0);
@@ -449,35 +434,10 @@ function syncToCalendar() {
         createdCount++;
       }
     }
-    ui.alert('✅ Success', 'Added ' + createdCount + ' events.', ui.ButtonSet.OK);
+    ui.alert('✅ Success', \`Added \${createdCount} events.\`, ui.ButtonSet.OK);
   } catch (e) { ui.alert('❌ Error', e.toString(), ui.ButtonSet.OK); }
-}
-`;
-            
-            document.getElementById('hiddenScript').value = script;
-            goToStep(3);
-        }
-
-        function copyToClipboard() {
-            const copyText = document.getElementById("hiddenScript");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-            
-            try {
-                navigator.clipboard.writeText(copyText.value).then(() => {
-                    const btn = document.getElementById('copyBtn');
-                    btn.innerHTML = 'Copied!';
-                    btn.classList.add('bg-green-600');
-                    setTimeout(() => {
-                        btn.innerHTML = 'Copy to Clipboard';
-                        btn.classList.remove('bg-green-600');
-                    }, 2000);
-                });
-            } catch (e) {
-                // Fallback for older browsers
-                document.execCommand('copy');
-                alert('Code Copied!');
-            }
+}`;
+            document.getElementById('outputBox').value = script;
         }
     </script>
 </body>
